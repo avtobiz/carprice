@@ -1,0 +1,55 @@
+version: '2'
+services:
+    web:
+        image: nginx:latest
+        ports:
+            - "8000:80"
+#        restart: always
+        volumes:
+            - "./etc/nginx/default.conf:/etc/nginx/conf.d/default.conf"
+#            - "./etc/nginx/nginx.conf:/etc/nginx/nginx.conf"
+            - ".:/app"
+        depends_on:
+            - "php"
+            - "mongodb"
+    php:
+        build:
+            context: ./etc/php
+            args:
+                TIMEZONE: "Europe/Kiev"
+#        restart: always
+        volumes:
+            - .:/app
+    composer:
+        image: composer
+        volumes:
+            - .:/app
+    mongodb:
+        image: mongo
+#        restart: always
+        volumes:
+            - ./data/db/mongo:/data/db
+        ports:
+            - "27020:27017"
+        command: --storageEngine wiredTiger
+
+    blackfire:
+        image: blackfire/blackfire
+        environment:
+            BLACKFIRE_SERVER_ID: 84befa32-1213-4e0d-811c-4a383b6f0eb6
+            BLACKFIRE_SERVER_TOKEN: 1d118ea9a615a488e4a01f23870ce57bef6fed3aa4e632a650e99581357f9fa5
+#    memcached:
+#      image: memcached
+#      ports:
+#        - "11211:11211"
+#
+    redis:
+        image: redis
+        ports:
+            - "63799:6379"
+
+    rabbitmq:
+        image: rabbitmq:3.6.1-management
+        ports:
+            - "15672:15672"
+            - "5672:5672"

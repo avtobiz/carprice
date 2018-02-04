@@ -1,0 +1,4 @@
+api_tracking_get:
+    path: /v1.0/tracking
+    methods: ['GET']
+    defaults:  { _controller: AppBundle:API\Tracking:index }

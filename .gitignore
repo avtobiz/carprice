@@ -1,0 +1,29 @@
+.DS_Store
+###> symfony/framework-bundle ###
+.env
+/app/config/parameters.yml
+/var/
+/vendor/
+###< symfony/framework-bundle ###
+
+###> PhpStrom Shared Project Settings ###
+.idea/
+!.idea/scopes/*
+!.idea/runConfigurations/*
+!.idea/.name
+!.idea/encodings.xml
+!.idea/php.xml
+!.idea/php-test-framework.xml
+!.idea/symfony2.xml
+!.idea/webResources.xml
+###< PhpStrom Shared Project Settings ###s
+
+###> symfony/phpunit-bridge ###
+/phpunit.xml
+###< symfony/phpunit-bridge ###
+
+###> apidoc ###
+public/apidoc/
+###< apidoc ###
+
+/data/db/*

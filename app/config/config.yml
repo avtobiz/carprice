@@ -1,0 +1,42 @@
+imports:
+    - { resource: parameters.yml }
+    - { resource: services.yml }
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+parameters:
+    locale: en
+
+framework:
+    #esi: ~
+    #translator: { fallbacks: ['%locale%'] }
+    secret: '%secret%'
+    router:
+        resource: '%kernel.project_dir%/app/config/routing.yml'
+        strict_requirements: ~
+    validation: { enable_annotations: true }
+    serializer: { enable_annotations: false }
+    default_locale: '%locale%'
+    fragments: ~
+    http_method_override: true
+    php_errors:
+        log: true
+
+#enqueue:
+#    transport:
+#        default: 'rabbitmq_amqp'
+#        rabbitmq_amqp:
+#            host: '%env(RABBITMQ__HOST)%'
+#            port: '%env(RABBITMQ__AMQP__PORT)%'
+#            user: '%env(RABBITMQ__USER)%'
+#            pass: '%env(RABBITMQ__PASSWORD)%'
+#            vhost: '%env(RABBITMQ__VHOST)%'
+#    client: ~
+
+mongo_db:
+    connection:
+        host: '%env(MONGODB_HOST)%'
+        port: '%env(MONGODB_PORT)%'
+        user: '%env(MONGODB_USER)%'
+        pass: '%env(MONGODB_PASS)%'
+    default_database: '%env(MONGODB_DATABASE)%'
