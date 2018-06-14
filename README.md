@@ -48,4 +48,4 @@ https://github.com/avtobiz/carprice.git
 Example of docker x-debug
 https://github.com/ImprontaAdvance/docker-compose-symfony#xdebug-on-mac
 
-
+docker-compose exec php /app/bin/console create-job
