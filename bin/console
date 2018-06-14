@@ -1,0 +1,36 @@
+#!/usr/bin/env php
+<?php
+
+use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\Debug\Debug;
+use Symfony\Component\Dotenv\Dotenv;
+
+// if you don't want to setup permissions the proper way, just uncomment the following PHP line
+// read https://symfony.com/doc/current/setup.html#checking-symfony-application-configuration-and-setup
+// for more information
+//umask(0000);
+
+
+ini_set("memory_limit",-1);
+set_time_limit(0);
+
+
+require __DIR__.'/../vendor/autoload.php';
+
+// The check is to ensure we don't use .env in production
+if (!isset($_SERVER['APP_ENV'])) {
+    (new Dotenv())->load(__DIR__.'/../.env');
+}
+
+$input = new ArgvInput();
+$env = $input->getParameterOption(['--env', '-e'], getenv('APP_ENV') ?: 'dev');
+$debug = getenv('APP_DEBUG') !== '0' && !$input->hasParameterOption(['--no-debug', '']) && $env !== 'prod';
+
+if ($debug) {
+    Debug::enable();
+}
+
+$kernel = new AppKernel($env, $debug);
+$application = new Application($kernel);
+$application->run($input);
