@@ -11,13 +11,12 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 
-class AutoCommand extends ContainerAwareCommand
+class CreateJobCommand extends ContainerAwareCommand
 {
     protected function configure()
     {
-        $this
-            ->setName('api')
-            ->setDescription('Get information about auto');
+        $this->setName('create-job')
+            ->setDescription('Generate job');
     }
 
     public function iteratePages($page, $jobId, RiaClient $client, $jobRepo)
@@ -30,6 +29,7 @@ class AutoCommand extends ContainerAwareCommand
         if (in_array($res->getStatusCode(), [200])) {
             $data = json_decode($res->getBody()->getContents(), true);
 
+            /** @var JobRepository $jobRepo */
             $jobRepo->addTasksForJob($jobId, $data['result']['search_result']['ids']);
 
         } else {
@@ -46,68 +46,31 @@ class AutoCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $client = new RiaClient();
+        $logger = $this->getContainer()->get('logger');
         $params = ['state' => [4],'city'=>[0], 'countpage' => 100, 'saledParam' => 0, 'top' => 0, 'page' => 0, 'category_id' => 1];
         $res = $client->searchAuto($params);
 
         $jobRepo = $this->getContainer()->get(JobRepository::class);
 
         if (in_array($res->getStatusCode(), [200])) {
-            $output->write('Success request', true);
-
             $array = json_decode($res->getBody()->getContents(), true);
             $count = $array['result']['search_result']['count'];
-            $output->write(sprintf("Found items: %s", $count), true);
 
+            $logger->info(sprintf("Found items: %s", $count));
 
             $countpage = $params['countpage'];
             $pages = round($count / $countpage)+1;
 
-            $output->write(sprintf("Total pages: %s", $pages), true);
-
             $jobId = $jobRepo->createJob($params, $count);
-            $output->write(sprintf("Create job: %s", $jobId), true);
 
             for ($p = 0; $p <= $pages; $p++) {
-                $output->write(sprintf('save page %s', $p), true);
                 $this->iteratePages($p, $jobId, $client, $jobRepo);
             }
 
-//            var_dump($array['result']['search_result']);
-//            foreach ($array['result']['search_result']['ids'] as $id) {
-
-//                $data = $s->getById($id);
-//                echo $data['userId'].PHP_EOL;
-//                addDate
-//                updateDate
-//                expireDate
-
-//                userPhoneData['phoneId']
-//                userPhoneData['phone']
-//                USD
-//                UAH
-//                EUR
-//                linkToView
-//                title
-
-//                autoId
-//
-//                силка ціна дата
-//            }
-
-//            database My SQL
-//            Car
-//            id
-//            userID
-//                        version
-//            advertID
-
-
-
-            //
-
-            $output->writeln('End...');
+            $logger->info(sprintf("Create job: %s", $jobId));
+            $output->write($jobId, true);
         } else {
-            $output->writeln(sprintf("Bad response, status code %s", $res->getStatusCode()), true);
+            $logger->error(sprintf("Bad response, status code %s", $res->getStatusCode()));
         }
     }
 }

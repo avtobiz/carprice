@@ -22,17 +22,6 @@ framework:
     php_errors:
         log: true
 
-#enqueue:
-#    transport:
-#        default: 'rabbitmq_amqp'
-#        rabbitmq_amqp:
-#            host: '%env(RABBITMQ__HOST)%'
-#            port: '%env(RABBITMQ__AMQP__PORT)%'
-#            user: '%env(RABBITMQ__USER)%'
-#            pass: '%env(RABBITMQ__PASSWORD)%'
-#            vhost: '%env(RABBITMQ__VHOST)%'
-#    client: ~
-
 mongo_db:
     connection:
         host: '%env(MONGODB_HOST)%'

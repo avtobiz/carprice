@@ -9,7 +9,6 @@ RUN apt-get update && apt-get upgrade -y \
     libmagickwand-dev \
     libmcrypt-dev \
     libmcrypt-dev \
-    libpng12-dev \
     libmemcached-dev \
     libssl-dev \
     libssl-doc \
@@ -37,17 +36,3 @@ RUN apt-get update && apt-get upgrade -y \
     && pecl install redis && docker-php-ext-enable redis \
     && pecl install amqp && docker-php-ext-enable amqp \
     && yes '' | pecl install imagick && docker-php-ext-enable imagick
-
-RUN echo xdebug.remote_handler=dbgp >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
-RUN echo xdebug.remote_port=9000 >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
-RUN echo xdebug.remote_host=10.254.254.254 >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
-RUN echo xdebug.idekey=PHPSTORM >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
-RUN echo xdebug.default_enable=1 >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
-RUN echo xdebug.remote_enable=1 >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
-
-RUN version=$(php -r "echo PHP_MAJOR_VERSION.PHP_MINOR_VERSION;") \
-    && curl -A "Docker" -o /tmp/blackfire-probe.tar.gz -D - -L -s https://blackfire.io/api/v1/releases/probe/php/linux/amd64/$version \
-    && tar zxpf /tmp/blackfire-probe.tar.gz -C /tmp \
-    && mv /tmp/blackfire-*.so $(php -r "echo ini_get('extension_dir');")/blackfire.so \
-    && printf "extension=blackfire.so\nblackfire.agent_socket=tcp://blackfire:8707\n" > $PHP_INI_DIR/conf.d/blackfire.ini
-

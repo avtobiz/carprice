@@ -48,6 +48,7 @@ class JobRepository
             'created_at'    => (new \MongoDB\BSON\UTCDateTime(time() * 1000)),
             'params'        => $params,
             'count'         => $count,
+            'status'        => 'created',
             'tasks'         => [],
         ]);
 
@@ -87,6 +88,19 @@ class JobRepository
     }
 
     /**
+     * @param ObjectId $jobId
+     *
+     * @return \MongoDB\UpdateResult
+     */
+    public function updateStatus(ObjectId $jobId)
+    {
+        return $this->collection->updateOne(
+            ['_id' => $jobId],
+            ['$set' => ['status' => 'completed']]
+        );
+    }
+
+    /**
      * @param ObjectId $id
      *
      * @return array
@@ -94,5 +108,13 @@ class JobRepository
     public function findById(ObjectId $id)
     {
         return $this->collection->findOne(['_id'=>$id]);
+    }
+
+    /**
+     * @return array
+     */
+    public function getJobForExecute()
+    {
+        return $this->collection->findOne(['status' => 'created']);
     }
 }

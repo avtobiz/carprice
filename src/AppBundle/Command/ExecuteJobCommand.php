@@ -2,6 +2,7 @@
 
 namespace AppBundle\Command;
 
+use AppBundle\Repository\CarRepository;
 use AppBundle\Repository\JobRepository;
 use AppBundle\Service\API\RiaClient;
 use Interop\Queue\Exception;
@@ -22,13 +23,13 @@ use ExcelAnt\Adapter\PhpExcel\Writer\WriterFactory,
     ExcelAnt\Adapter\PhpExcel\Writer\PhpExcelWriter\Excel5;
 
 
-class AutoInfoCommand extends ContainerAwareCommand
+class ExecuteJobCommand extends ContainerAwareCommand
 {
     protected function configure()
     {
         $this
-            ->setName('api-info')
-            ->setDescription('Get information about auto');
+            ->setName('execute-job')
+            ->setDescription('Execute job by ID');
     }
 
     /**
@@ -38,17 +39,21 @@ class AutoInfoCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $client = new RiaClient();
+        $logger = $this->getContainer()->get('logger');
         $jobRepo = $this->getContainer()->get(JobRepository::class);
         $mongoClient = $this->getContainer()->get('mongodb');
-        $job = $jobRepo->findById(new ObjectID('5a0560dfccb0c6004203b392'));
+
+        $job = $jobRepo->getJobForExecute();
 
         if (is_null($job)) {
-            throw new Exception('No found job by ID');
+            $logger->addError(sprintf('Not found job'));
+
+            return false;
         }
 
+        $logger->info(sprintf('Execute job ID:"%s"', $job['_id']));
         $iteration = 0;
         $batchSize = 50;
-        $i = 0;
         $completedTasks = [];
 
         $bulk = new \MongoDB\Driver\BulkWrite;
@@ -57,6 +62,8 @@ class AutoInfoCommand extends ContainerAwareCommand
         foreach ($job->tasks as $id) {
             $iteration++;
             $progress->advance();
+
+            sleep(0.05);
 
             $res = $client->infoAutoById($id);
 
@@ -68,15 +75,11 @@ class AutoInfoCommand extends ContainerAwareCommand
                     continue;
                 }
 
-
                 $data['createdAt'] = (new \MongoDB\BSON\UTCDateTime(time() * 1000));
                 $data['job'] = $job['_id'];
 
                 $bulk->insert($data);
                 $completedTasks[] = $data['autoData']['autoId'];
-
-                // Handle user
-                // Handle phone
 
                 if (($iteration % $batchSize) === 0) {
                     $mongoClient->getManager()->executeBulkWrite('ria_auto.cars', $bulk);
@@ -86,8 +89,7 @@ class AutoInfoCommand extends ContainerAwareCommand
                     $completedTasks = [];
                 }
             } else {
-                $output->write('Error!!!!', true);
-                $output->write('Status code: ' . $res->getStatusCode(), true);
+                $logger->addError(sprintf('Bad response status code: "%s"', $res->getStatusCode()));
             }
         }
 
@@ -95,8 +97,8 @@ class AutoInfoCommand extends ContainerAwareCommand
         unset($bulk);
         $progress->finish();
         $jobRepo->setCompletedTasksForJob($job['_id'], $completedTasks);
-        unset($completedTasks);
+        $jobRepo->updateStatus($job['_id']);
 
-        $output->writeln('End...');
+        unset($completedTasks);
     }
 }

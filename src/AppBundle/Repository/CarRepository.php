@@ -5,13 +5,14 @@ namespace AppBundle\Repository;
 use MongoDB\Collection;
 use MongoDBBundle\Client;
 use \MongoDB\BSON\ObjectId;
+use Symfony\Component\ExpressionLanguage\Tests\Node\Obj;
 
 /**
  * Class CarRepository
  */
 class CarRepository
 {
-    const COLLECTION_NAME = 'auto';
+    const COLLECTION_NAME = 'cars';
 
     /**
      * @var \MongoDBBundle\Client
@@ -76,5 +77,87 @@ class CarRepository
     public function findById(ObjectId $id)
     {
         return $this->collection->findOne(['_id'=>$id]);
+    }
+
+    /**
+     * @param ObjectId $id
+     *
+     * @return \MongoDB\Driver\Cursor
+     */
+    public function findAllByJobId(ObjectId $id)
+    {
+        return $this->collection->find(['job' => $id]);
+    }
+
+    /**
+     * @param ObjectId $id
+     *
+     * @return int
+     */
+    public function countByJobId(ObjectId $id)
+    {
+        return $this->collection->count(['job' => $id]);
+    }
+
+    /**
+     *
+     * @param string $autoId
+     * @return array
+     */
+    public function findByAutoId(string $autoId)
+    {
+        return $this->collection->findOne(['autoData.autoId' => $autoId]);
+    }
+
+    /**
+     * @param ObjectId $id
+     * @param ObjectId $job
+     * @param string $hash
+     *
+     * @return \MongoDB\UpdateResult
+     */
+    public function setHash(ObjectId $id, string $hash)
+    {
+        return $this->collection->updateOne(
+            ['_id' => $id],
+            ['$set' => ['_hash' => $hash]],
+            ['upsert' => true]
+        );
+    }
+
+    /**
+     *
+     * @param string $autoId
+     * @param ObjectId $jobId
+     *
+     * @return array
+     */
+    public function findByAutoIdAndJobId(string $autoId, ObjectId $jobId)
+    {
+        return $this->collection->findOne(['autoData.autoId' => $autoId, 'job' => $jobId]);
+    }
+
+    /**
+     *
+     * @param string $phone
+     * @param ObjectId $jobId
+     *
+     * @return \MongoDB\Driver\Cursor
+     */
+    public function findByPhoneJob(string $phone, ObjectId $jobId)
+    {
+        return $this->collection->find(['userPhoneData.phoneId' => $phone, 'job' => $jobId]);
+    }
+
+    /**
+     *
+     * @param int $phone
+     * @param ObjectId $jobId
+     *
+     * @return int
+     */
+    public function countByPhoneJob(int $phone, ObjectId $jobId)
+    {
+        return $this->collection->count(['userId' => $phone, 'job' => $jobId]);
     }
 }

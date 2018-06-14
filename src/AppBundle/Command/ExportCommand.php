@@ -6,6 +6,8 @@ use AppBundle\Repository\JobRepository;
 use AppBundle\Service\API\RiaClient;
 use Interop\Queue\Exception;
 use MongoDB\BSON\ObjectID;
+use PHPExcel_CachedObjectStorageFactory;
+use PHPExcel_Settings;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
@@ -39,9 +41,17 @@ class ExportCommand extends ContainerAwareCommand
     {
         $path = $this->getContainer()->getParameter('kernel.root_dir') . '/../public/data/';
 
+        //5b16e0f3fbd1b2002006ae72
+        //5b17856afbd1b200254c23d2
         $mongoClient = $this->getContainer()->get('mongodb');
-        $filter = ['job' => new ObjectID('5a0478cdccb0c6000d32c1a2')];
+        $filter = [];
+        $filter = ['job' => new ObjectID('5b199306fbd1b2000f3951e2')];
         $options = [];
+
+        $cacheMethod = PHPExcel_CachedObjectStorageFactory::cache_to_phpTemp;
+        $cacheSettings = array( 'memoryCacheSize ' => '256MB');
+        PHPExcel_Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
+
 
         $query = new \MongoDB\Driver\Query($filter, $options);
         $items   = $mongoClient->getManager()->executeQuery('ria_auto.cars', $query);
@@ -56,6 +66,8 @@ class ExportCommand extends ContainerAwareCommand
             'Add Date',
             'Expire Date',
             'Phone',
+            'Phone ID',
+            'User ID',
             'USD',
             'Mark name',
             'Model name',
@@ -76,6 +88,8 @@ class ExportCommand extends ContainerAwareCommand
                 $document->addDate,
                 $document->expireDate,
                 $document->userPhoneData->phone,
+                $document->userPhoneData->phoneId,
+                $document->userId,
                 $document->USD,
                 $document->markName,
                 $document->modelName,
@@ -96,6 +110,7 @@ class ExportCommand extends ContainerAwareCommand
 
         $sheet->addTable($table, new Coordinate(1, 1));
         $workbook->addSheet($sheet);
+
 
         $fileName = 'Export-'.date('Y-m-d').'.xls';
         $writer = (new WriterFactory())->createWriter(new Excel5($path.$fileName));
