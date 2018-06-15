@@ -88,15 +88,16 @@ class JobRepository
     }
 
     /**
-     * @param ObjectId $jobId
+     * @param ObjectId  $jobId
+     * @param string    $status
      *
      * @return \MongoDB\UpdateResult
      */
-    public function updateStatus(ObjectId $jobId)
+    public function updateStatus(ObjectId $jobId, string $status)
     {
         return $this->collection->updateOne(
             ['_id' => $jobId],
-            ['$set' => ['status' => 'completed']]
+            ['$set' => ['status' => $status]]
         );
     }
 
@@ -116,5 +117,15 @@ class JobRepository
     public function getJobForExecute()
     {
         return $this->collection->findOne(['status' => 'created']);
+    }
+
+    /**
+     * @param string $status
+     *
+     * @return array
+     */
+    public function findOneByStatus(string $status)
+    {
+        return $this->collection->findOne(['status' => $status]);
     }
 }

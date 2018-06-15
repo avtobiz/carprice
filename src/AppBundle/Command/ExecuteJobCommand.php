@@ -55,6 +55,7 @@ class ExecuteJobCommand extends ContainerAwareCommand
         $iteration = 0;
         $batchSize = 50;
         $completedTasks = [];
+        $isOverLimit = false;
 
         $bulk = new \MongoDB\Driver\BulkWrite;
         $progress = new ProgressBar($output, count($job->tasks));
@@ -90,6 +91,15 @@ class ExecuteJobCommand extends ContainerAwareCommand
                 }
             } else {
                 $logger->addError(sprintf('Bad response status code: "%s"', $res->getStatusCode()));
+
+                if (in_array($res->getStatusCode(), [502])) {
+                    continue;
+                }
+
+                if (in_array($res->getStatusCode(), [429])) {
+                    $isOverLimit = true;
+                    break;
+                }
             }
         }
 
@@ -97,8 +107,14 @@ class ExecuteJobCommand extends ContainerAwareCommand
         unset($bulk);
         $progress->finish();
         $jobRepo->setCompletedTasksForJob($job['_id'], $completedTasks);
-        $jobRepo->updateStatus($job['_id']);
-
         unset($completedTasks);
+
+        if ($isOverLimit) {
+            $logger->addError(sprintf('Exit over limit'));
+
+            return false;
+        }
+
+        $jobRepo->updateStatus($job['_id'], 'completed');
     }
 }

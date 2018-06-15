@@ -40,12 +40,18 @@ class ExportCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $path = $this->getContainer()->getParameter('kernel.root_dir') . '/../public/data/';
-
-        //5b16e0f3fbd1b2002006ae72
-        //5b17856afbd1b200254c23d2
+        $logger = $this->getContainer()->get('logger');
         $mongoClient = $this->getContainer()->get('mongodb');
-        $filter = [];
-        $filter = ['job' => new ObjectID('5b199306fbd1b2000f3951e2')];
+        $jobRepo = $this->getContainer()->get(JobRepository::class);
+        $job = $jobRepo->findOneByStatus('completed');
+
+        if (is_null($job)) {
+            $logger->addError('Not found job');
+
+            return false;
+        }
+
+        $filter = ['job' => $job];
         $options = [];
 
         $cacheMethod = PHPExcel_CachedObjectStorageFactory::cache_to_phpTemp;
