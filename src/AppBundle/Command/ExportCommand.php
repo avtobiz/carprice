@@ -51,7 +51,7 @@ class ExportCommand extends ContainerAwareCommand
             return false;
         }
 
-        $filter = ['job' => $job];
+        $filter = ['job' => $job['_id']];
         $options = [];
 
         $cacheMethod = PHPExcel_CachedObjectStorageFactory::cache_to_phpTemp;
