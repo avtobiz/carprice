@@ -49,3 +49,7 @@ Example of docker x-debug
 https://github.com/ImprontaAdvance/docker-compose-symfony#xdebug-on-mac
 
 docker-compose exec php /app/bin/console create-job
+
+
+
+docker-machine create --driver=digitalocean --digitalocean-access-token=676dae5e083967804c030c1bae5feb4e9558ac0b72c464d5fc3ac5da248adbb9 ria

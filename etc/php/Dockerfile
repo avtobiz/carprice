@@ -31,8 +31,11 @@ RUN apt-get update && apt-get upgrade -y \
         --with-jpeg-dir=/usr/include/ \
         --with-png-dir=/usr/include/ \
     && docker-php-ext-install gd \
-    && pecl install xdebug && docker-php-ext-enable xdebug \
     && pecl install mongodb && docker-php-ext-enable mongodb \
     && pecl install redis && docker-php-ext-enable redis \
     && pecl install amqp && docker-php-ext-enable amqp \
     && yes '' | pecl install imagick && docker-php-ext-enable imagick
+
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+RUN apt-get install -y git
+WORKDIR /app
