@@ -24,6 +24,9 @@ class CreateJobCommand extends ContainerAwareCommand
         sleep(3);
         $params = ['state' => [4],'city'=>[0], 'countpage' => 100, 'saledParam' => 0, 'top' => 0, 'page' => $page, 'category_id' => 1];
 
+        //API KEY
+        $params['api_key'] = 'hblEVdm9aasEsWL54Mcj5wzD1bCnPJiOKHa7h23C';
+
         $res = $client->searchAuto($params);
 
         if (in_array($res->getStatusCode(), [200])) {
@@ -48,6 +51,10 @@ class CreateJobCommand extends ContainerAwareCommand
         $client = new RiaClient();
         $logger = $this->getContainer()->get('logger');
         $params = ['state' => [4],'city'=>[0], 'countpage' => 100, 'saledParam' => 0, 'top' => 0, 'page' => 0, 'category_id' => 1];
+
+        //API KEY
+        $params['api_key'] = 'hblEVdm9aasEsWL54Mcj5wzD1bCnPJiOKHa7h23C';
+
         $res = $client->searchAuto($params);
 
         $jobRepo = $this->getContainer()->get(JobRepository::class);

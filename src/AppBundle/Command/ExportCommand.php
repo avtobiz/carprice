@@ -122,9 +122,8 @@ class ExportCommand extends ContainerAwareCommand
         $writer = (new WriterFactory())->createWriter(new Excel5($path.$fileName));
         $phpExcel = $writer->convert($workbook);
         $writer->write($phpExcel);
+        $jobRepo->updateStatus($job['_id'], 'exported');
         $progress->finish();
-
-
         $output->writeln('End...', true);
     }
 }

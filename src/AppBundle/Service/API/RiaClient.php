@@ -14,8 +14,9 @@ use GuzzleHttp\Exception\BadResponseException;
  */
 class RiaClient extends GuzzleClient
 {
-//    const API_KEY = 'hblEVdm9aasEsWL54Mcj5wzD1bCnPJiOKHa7h23C';
-    const API_KEY = 'NwVgGRITaTJnWQlnX3aJdOd85k01BiLlfODdXDcS';
+//    const API_KEY = '';
+
+    const API_KEY = '﻿1aqv1bExQJ9lUWN3pWw1jPQxB9L83j7PfLJ8ITsV';
 
     /**
      * RiaClient constructor.
@@ -33,7 +34,9 @@ class RiaClient extends GuzzleClient
      */
     public function searchAuto(array $params)
     {
-        $params['api_key'] = self::API_KEY;
+        if (!isset($params['api_key'])) {
+            $params['api_key'] = self::API_KEY;
+        }
 
         $uri = '/auto/search';
         $options['query'] = $params;
@@ -43,12 +46,17 @@ class RiaClient extends GuzzleClient
 
     /**
      * @param string|int $id
+     * @param array $params
      *
      * @return null|ResponseInterface
+     * @throws \Exception
      */
-    public function infoAutoById($id)
+    public function infoAutoById($id, array $params = [])
     {
-        $params['api_key'] = self::API_KEY;
+        if (!isset($params['api_key'])) {
+            $params['api_key'] = self::API_KEY;
+        }
+
         $params['auto_id'] = $id;
 
         $uri = '/auto/info';
@@ -69,13 +77,17 @@ class RiaClient extends GuzzleClient
     private function doRequest($method, $uri, $options)
     {
         try {
+            /** @var ResponseInterface $response */
             $response = $this->request($method, $uri, $options);
         } catch (BadResponseException $e) {
             $response = $e->getResponse();
         }
 
+//        if (in_array($response->getStatusCode(), [429])) {
+//            $isOverLimit = true;
+//            break;
+//        }
+
         return $response;
     }
-
-    //vritual client functional
 }

@@ -60,13 +60,16 @@ class ExecuteJobCommand extends ContainerAwareCommand
         $bulk = new \MongoDB\Driver\BulkWrite;
         $progress = new ProgressBar($output, count($job->tasks));
 
+        $params = [];
+        // API KEY
+        $params['api_key'] = 'NwVgGRITaTJnWQlnX3aJdOd85k01BiLlfODdXDcS';
         foreach ($job->tasks as $id) {
             $iteration++;
             $progress->advance();
 
             sleep(0.05);
 
-            $res = $client->infoAutoById($id);
+            $res = $client->infoAutoById($id, $params);
 
             if (in_array($res->getStatusCode(), [200])) {
                 $data = json_decode($res->getBody()->getContents(), true);
@@ -98,6 +101,7 @@ class ExecuteJobCommand extends ContainerAwareCommand
 
                 if (in_array($res->getStatusCode(), [429])) {
                     $isOverLimit = true;
+                    $params['api_key'] = 'bHx3Vwr8NDA1A8eCu1N18LpxCEZ1EbJZDeEOR6jT';
                     break;
                 }
             }
@@ -106,6 +110,7 @@ class ExecuteJobCommand extends ContainerAwareCommand
         $mongoClient->getManager()->executeBulkWrite('ria_auto.cars', $bulk);
         unset($bulk);
         $progress->finish();
+        $jobRepo->updateStatus($job['_id'], 'completed');
         $jobRepo->setCompletedTasksForJob($job['_id'], $completedTasks);
         unset($completedTasks);
 
@@ -114,7 +119,5 @@ class ExecuteJobCommand extends ContainerAwareCommand
 
             return false;
         }
-
-        $jobRepo->updateStatus($job['_id'], 'completed');
     }
 }
