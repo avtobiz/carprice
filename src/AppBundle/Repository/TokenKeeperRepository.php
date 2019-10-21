@@ -9,7 +9,7 @@ use \MongoDB\BSON\ObjectId;
 /**
  * Class TokenKeeper
  */
-class TokenKeeper
+class TokenKeeperRepository
 {
     const COLLECTION_NAME = 'ria_tokens';
 
