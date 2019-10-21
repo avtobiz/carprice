@@ -23,11 +23,6 @@ class RiaClient extends GuzzleClient
     private $tokenKeeper;
 
     /**
-     * @var string
-     */
-    private $token = null;
-
-    /**
      * RiaClient constructor.
      *
      * @param TokenKeeperRepository $tokenKeeper
@@ -44,12 +39,9 @@ class RiaClient extends GuzzleClient
      */
     public function getToken()
     {
-        if (is_null($this->token)) {
-            $t = $this->tokenKeeper->getToken();
-            $this->token = $t['token'];
-        }
+        $t = $this->tokenKeeper->getToken();
 
-        return $this->token;
+        return $t['token'];
     }
 
     /**
@@ -58,8 +50,6 @@ class RiaClient extends GuzzleClient
     public function refreshToken($token)
     {
         $this->tokenKeeper->updateStatus($token, 'over_limit');
-        $this->token = null;
-        $this->getToken();
     }
 
     /**
