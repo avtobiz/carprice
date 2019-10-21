@@ -2,7 +2,7 @@
 
 namespace AppBundle\Service\API;
 
-use AppBundle\Repository\TokenKeeper;
+use AppBundle\Repository\TokenKeeperRepository;
 use Symfony\Component\HttpFoundation\Request;
 use GuzzleHttp\Client as GuzzleClient;
 use Psr\Http\Message\ResponseInterface;
@@ -18,7 +18,7 @@ class RiaClient extends GuzzleClient
     const API_KEY = '﻿1aqv1bExQJ9lUWN3pWw1jPQxB9L83j7PfLJ8ITsV';
 
     /**
-     * @var TokenKeeper
+     * @var TokenKeeperRepository
      */
     private $tokenKeeper;
 
@@ -30,7 +30,7 @@ class RiaClient extends GuzzleClient
     /**
      * RiaClient constructor.
      *
-     * @param TokenKeeper $tokenKeeper
+     * @param TokenKeeperRepository $tokenKeeper
      */
     public function __construct($tokenKeeper)
     {

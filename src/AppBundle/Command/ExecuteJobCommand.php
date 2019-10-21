@@ -4,7 +4,7 @@ namespace AppBundle\Command;
 
 use AppBundle\Repository\CarRepository;
 use AppBundle\Repository\JobRepository;
-use AppBundle\Repository\TokenKeeper;
+use AppBundle\Repository\TokenKeeperRepository;
 use AppBundle\Service\API\RiaClient;
 use Interop\Queue\Exception;
 use MongoDB\BSON\ObjectID;
@@ -41,7 +41,7 @@ class ExecuteJobCommand extends ContainerAwareCommand
     {
         $logger = $this->getContainer()->get('logger');
         $jobRepo = $this->getContainer()->get(JobRepository::class);
-        $tokenKeeper = $this->getContainer()->get(TokenKeeper::class);
+        $tokenKeeper = $this->getContainer()->get(TokenKeeperRepository::class);
         $mongoClient = $this->getContainer()->get('mongodb');
         $client = new RiaClient($tokenKeeper);
 
