@@ -16,7 +16,7 @@ class RiaClient extends GuzzleClient
 {
 //    const API_KEY = '';
 
-    const API_KEY = '﻿1aqv1bExQJ9lUWN3pWw1jPQxB9L83j7PfLJ8ITsV';
+    const API_KEY = '1aqv1bExQJ9lUWN3pWw1jPQxB9L83j7PfLJ8ITsV';
 
     /**
      * RiaClient constructor.

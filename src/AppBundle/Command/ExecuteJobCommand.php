@@ -63,6 +63,9 @@ class ExecuteJobCommand extends ContainerAwareCommand
         $params = [];
         // API KEY
         $params['api_key'] = 'NwVgGRITaTJnWQlnX3aJdOd85k01BiLlfODdXDcS';
+	$params['api_key'] = 'bHx3Vwr8NDA1A8eCu1N18LpxCEZ1EbJZDeEOR6jT';
+	$params['api_key'] = '4pPvd0qUbfQqfEPBmK9nSsltjG3G2QfhU0ncBMoL';
+
         foreach ($job->tasks as $id) {
             $iteration++;
             $progress->advance();
@@ -102,7 +105,7 @@ class ExecuteJobCommand extends ContainerAwareCommand
                 if (in_array($res->getStatusCode(), [429])) {
                     $isOverLimit = true;
                     $params['api_key'] = 'bHx3Vwr8NDA1A8eCu1N18LpxCEZ1EbJZDeEOR6jT';
-                    break;
+                   
                 }
             }
         }

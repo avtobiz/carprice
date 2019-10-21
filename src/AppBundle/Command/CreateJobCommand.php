@@ -21,13 +21,14 @@ class CreateJobCommand extends ContainerAwareCommand
 
     public function iteratePages($page, $jobId, RiaClient $client, $jobRepo)
     {
-        sleep(3);
+        sleep(5);
         $params = ['state' => [4],'city'=>[0], 'countpage' => 100, 'saledParam' => 0, 'top' => 0, 'page' => $page, 'category_id' => 1];
 
         //API KEY
         $params['api_key'] = 'hblEVdm9aasEsWL54Mcj5wzD1bCnPJiOKHa7h23C';
 
         $res = $client->searchAuto($params);
+
 
         if (in_array($res->getStatusCode(), [200])) {
             $data = json_decode($res->getBody()->getContents(), true);
@@ -37,7 +38,7 @@ class CreateJobCommand extends ContainerAwareCommand
 
         } else {
             echo $res->getStatusCode();
-            throw new \Exception('Bad response');
+            
         }
     }
 
