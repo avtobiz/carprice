@@ -2,6 +2,7 @@
 
 namespace AppBundle\Service\API;
 
+use AppBundle\Repository\TokenKeeper;
 use Symfony\Component\HttpFoundation\Request;
 use GuzzleHttp\Client as GuzzleClient;
 use Psr\Http\Message\ResponseInterface;
@@ -14,17 +15,51 @@ use GuzzleHttp\Exception\BadResponseException;
  */
 class RiaClient extends GuzzleClient
 {
-//    const API_KEY = '';
-
     const API_KEY = '﻿1aqv1bExQJ9lUWN3pWw1jPQxB9L83j7PfLJ8ITsV';
 
     /**
-     * RiaClient constructor.
+     * @var TokenKeeper
      */
-    public function __construct()
+    private $tokenKeeper;
+
+    /**
+     * @var string
+     */
+    private $token = null;
+
+    /**
+     * RiaClient constructor.
+     *
+     * @param TokenKeeper $tokenKeeper
+     */
+    public function __construct($tokenKeeper)
     {
         $options = ['base_uri' => 'https://developers.ria.com'];
         parent::__construct($options);
+        $this->tokenKeeper = $tokenKeeper;
+    }
+
+    /**
+     * @return string
+     */
+    public function getToken()
+    {
+        if (is_null($this->token)) {
+            $t = $this->tokenKeeper->getToken();
+            $this->token = $t['token'];
+        }
+
+        return $this->token;
+    }
+
+    /**
+     * @param string $token
+     */
+    public function refreshToken($token)
+    {
+        $this->tokenKeeper->updateStatus($token, 'over_limit');
+        $this->token = null;
+        $this->getToken();
     }
 
     /**
@@ -35,7 +70,7 @@ class RiaClient extends GuzzleClient
     public function searchAuto(array $params)
     {
         if (!isset($params['api_key'])) {
-            $params['api_key'] = self::API_KEY;
+            $params['api_key'] = $this->getToken();
         }
 
         $uri = '/auto/search';
@@ -54,7 +89,7 @@ class RiaClient extends GuzzleClient
     public function infoAutoById($id, array $params = [])
     {
         if (!isset($params['api_key'])) {
-            $params['api_key'] = self::API_KEY;
+            $params['api_key'] = $this->getToken();
         }
 
         $params['auto_id'] = $id;
@@ -83,10 +118,9 @@ class RiaClient extends GuzzleClient
             $response = $e->getResponse();
         }
 
-//        if (in_array($response->getStatusCode(), [429])) {
-//            $isOverLimit = true;
-//            break;
-//        }
+        if (in_array($response->getStatusCode(), [429])) {
+            $this->refreshToken($this->token);
+        }
 
         return $response;
     }

@@ -4,6 +4,7 @@ namespace AppBundle\Command;
 
 use AppBundle\Repository\CarRepository;
 use AppBundle\Repository\JobRepository;
+use AppBundle\Repository\TokenKeeper;
 use AppBundle\Service\API\RiaClient;
 use Interop\Queue\Exception;
 use MongoDB\BSON\ObjectID;
@@ -38,10 +39,11 @@ class ExecuteJobCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $client = new RiaClient();
         $logger = $this->getContainer()->get('logger');
         $jobRepo = $this->getContainer()->get(JobRepository::class);
+        $tokenKeeper = $this->getContainer()->get(TokenKeeper::class);
         $mongoClient = $this->getContainer()->get('mongodb');
+        $client = new RiaClient($tokenKeeper);
 
         $job = $jobRepo->getJobForExecute();
 
@@ -60,16 +62,13 @@ class ExecuteJobCommand extends ContainerAwareCommand
         $bulk = new \MongoDB\Driver\BulkWrite;
         $progress = new ProgressBar($output, count($job->tasks));
 
-        $params = [];
-        // API KEY
-        $params['api_key'] = 'NwVgGRITaTJnWQlnX3aJdOd85k01BiLlfODdXDcS';
         foreach ($job->tasks as $id) {
             $iteration++;
             $progress->advance();
 
             sleep(0.05);
 
-            $res = $client->infoAutoById($id, $params);
+            $res = $client->infoAutoById($id);
 
             if (in_array($res->getStatusCode(), [200])) {
                 $data = json_decode($res->getBody()->getContents(), true);
@@ -101,8 +100,7 @@ class ExecuteJobCommand extends ContainerAwareCommand
 
                 if (in_array($res->getStatusCode(), [429])) {
                     $isOverLimit = true;
-                    $params['api_key'] = 'bHx3Vwr8NDA1A8eCu1N18LpxCEZ1EbJZDeEOR6jT';
-                    break;
+                    continue;
                 }
             }
         }
