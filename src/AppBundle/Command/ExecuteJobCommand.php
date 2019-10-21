@@ -66,7 +66,7 @@ class ExecuteJobCommand extends ContainerAwareCommand
             $iteration++;
             $progress->advance();
 
-            sleep(0.05);
+            sleep(0.01);
 
             $res = $client->infoAutoById($id);
 

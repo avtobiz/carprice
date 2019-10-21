@@ -23,6 +23,11 @@ class RiaClient extends GuzzleClient
     private $tokenKeeper;
 
     /**
+     * @var string
+     */
+    private $token;
+
+    /**
      * RiaClient constructor.
      *
      * @param TokenKeeperRepository $tokenKeeper
@@ -41,7 +46,7 @@ class RiaClient extends GuzzleClient
     {
         $t = $this->tokenKeeper->getToken();
 
-        return $t['token'];
+        return $this->token = $t['token'];
     }
 
     /**
