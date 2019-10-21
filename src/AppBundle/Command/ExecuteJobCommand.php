@@ -85,7 +85,7 @@ class ExecuteJobCommand extends ContainerAwareCommand
                 $completedTasks[] = $data['autoData']['autoId'];
 
                 if (($iteration % $batchSize) === 0) {
-                    $mongoClient->getManager()->executeBulkWrite('ria_auto.cars', $bulk);
+                    $mongoClient->getManager()->executeBulkWrite('ria_auto_1.cars', $bulk);
                     unset($bulk);
                     $bulk = new \MongoDB\Driver\BulkWrite;
                     $jobRepo->setCompletedTasksForJob($job['_id'], $completedTasks);
@@ -105,7 +105,7 @@ class ExecuteJobCommand extends ContainerAwareCommand
             }
         }
 
-        $mongoClient->getManager()->executeBulkWrite('ria_auto.cars', $bulk);
+        $mongoClient->getManager()->executeBulkWrite('ria_auto_1.cars', $bulk);
         unset($bulk);
         $progress->finish();
         $jobRepo->updateStatus($job['_id'], 'completed');

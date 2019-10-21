@@ -60,7 +60,7 @@ class ExportCommand extends ContainerAwareCommand
 
 
         $query = new \MongoDB\Driver\Query($filter, $options);
-        $items   = $mongoClient->getManager()->executeQuery('ria_auto.cars', $query);
+        $items   = $mongoClient->getManager()->executeQuery('ria_auto_1.cars', $query);
 
         $workbook = new Workbook();
         $sheet = new Sheet($workbook);
