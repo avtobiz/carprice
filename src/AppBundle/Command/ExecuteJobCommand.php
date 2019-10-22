@@ -66,7 +66,7 @@ class ExecuteJobCommand extends ContainerAwareCommand
             $iteration++;
             $progress->advance();
 
-            sleep(0.01);
+            sleep(0.05);
 
             $res = $client->infoAutoById($id);
 
@@ -108,9 +108,14 @@ class ExecuteJobCommand extends ContainerAwareCommand
         $mongoClient->getManager()->executeBulkWrite('ria_auto_1.cars', $bulk);
         unset($bulk);
         $progress->finish();
-        $jobRepo->updateStatus($job['_id'], 'completed');
         $jobRepo->setCompletedTasksForJob($job['_id'], $completedTasks);
         unset($completedTasks);
+
+        $job = $jobRepo->getJobForExecute();
+
+        if (count($job->tasks)<=0) {
+            $jobRepo->updateStatus($job['_id'], 'completed');
+        }
 
         if ($isOverLimit) {
             $logger->addError(sprintf('Exit over limit'));

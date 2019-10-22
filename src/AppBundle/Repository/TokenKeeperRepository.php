@@ -13,7 +13,7 @@ class TokenKeeperRepository
 {
     const COLLECTION_NAME = 'ria_tokens';
 
-    const LIMIT_NUMBER_OF_CALLS = 3000;
+    const LIMIT_NUMBER_OF_CALLS = 2900;
 
     /**
      * @var \MongoDBBundle\Client

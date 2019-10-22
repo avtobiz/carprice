@@ -3,6 +3,7 @@
 namespace AppBundle\Command;
 
 use AppBundle\Repository\JobRepository;
+use AppBundle\Repository\TokenKeeperRepository;
 use AppBundle\Service\API\RiaClient;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
@@ -23,10 +24,6 @@ class CreateJobCommand extends ContainerAwareCommand
     {
         sleep(5);
         $params = ['state' => [4],'city'=>[0], 'countpage' => 100, 'saledParam' => 0, 'top' => 0, 'page' => $page, 'category_id' => 1];
-
-        //API KEY
-        $params['api_key'] = 'hblEVdm9aasEsWL54Mcj5wzD1bCnPJiOKHa7h23C';
-
         $res = $client->searchAuto($params);
 
 
@@ -49,13 +46,10 @@ class CreateJobCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $client = new RiaClient();
+        $tokenKeeper = $this->getContainer()->get(TokenKeeperRepository::class);
+        $client = new RiaClient($tokenKeeper);
         $logger = $this->getContainer()->get('logger');
         $params = ['state' => [4],'city'=>[0], 'countpage' => 100, 'saledParam' => 0, 'top' => 0, 'page' => 0, 'category_id' => 1];
-
-        //API KEY
-        $params['api_key'] = 'hblEVdm9aasEsWL54Mcj5wzD1bCnPJiOKHa7h23C';
-
         $res = $client->searchAuto($params);
 
         $jobRepo = $this->getContainer()->get(JobRepository::class);
