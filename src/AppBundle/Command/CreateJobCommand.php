@@ -46,11 +46,6 @@ class CreateJobCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $datetime = (new \MongoDB\BSON\UTCDateTime(time() * 1000));
-
-        var_dump($datetime->toDateTime());
-        var_dump(date('Y-m-d'));
-        die();
         $tokenKeeper = $this->getContainer()->get(TokenKeeperRepository::class);
         $client = new RiaClient($tokenKeeper);
         $logger = $this->getContainer()->get('logger');
