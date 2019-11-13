@@ -26,7 +26,7 @@
     },
     "require": {
         "php": "^7.0.8",
-        "symfony/symfony": "3.3.*",
+        "symfony/symfony": "3.4.*",
         "symfony/monolog-bundle": "^3.1.0",
         "symfony/polyfill-apcu": "^1.0",
         "symfony/profiler-pack": "1.0.*",
