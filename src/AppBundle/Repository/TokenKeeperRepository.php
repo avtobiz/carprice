@@ -64,4 +64,15 @@ class TokenKeeperRepository
                 '$inc' => ['noc' => 1]
             ]);
     }
+
+    /**
+     * @return \MongoDB\UpdateResult
+     */
+    public function refreshTokens()
+    {
+        return $this->collection->updateMany(
+            [],
+            ['$set' => ['noc' => 0]]
+        );
+    }
 }
