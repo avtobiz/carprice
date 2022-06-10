@@ -32,7 +32,7 @@
         "symfony/profiler-pack": "1.0.*",
         "enqueue/enqueue-bundle": "0.8.1",
         "enqueue/amqp-ext": "0.8.0",
-        "guzzlehttp/guzzle": "6.3.0",
+        "guzzlehttp/guzzle": "6.5.7",
         "mongodb/mongodb": "1.2.0",
         "wisembly/excelant": "*"
     },
